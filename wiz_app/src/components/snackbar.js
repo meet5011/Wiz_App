@@ -5,10 +5,6 @@ import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 
 export default function SimpleSnackbar(props) {
-
-    const message = props.message;
-    //console.log(props);
-
   const [open, setOpen] = React.useState(true);
 
   const handleClick = () => {
@@ -25,11 +21,11 @@ export default function SimpleSnackbar(props) {
 
   const action = (
     <React.Fragment>
-      <Button color="secondary" size="x-large" onClick={handleClose}>
+      <Button color="secondary" size="small" onClick={handleClose}>
         UNDO
       </Button>
       <IconButton
-        size="small"
+        size="large"
         aria-label="close"
         color="inherit"
         onClick={handleClose}
@@ -46,9 +42,8 @@ export default function SimpleSnackbar(props) {
         open={open}
         autoHideDuration={4000}
         onClose={handleClose}
-        message={message}
+        message={props.message}
         action={action}
-        style={{margin:"0% 0% 1% 39%"}}
       />
     </div>
   );

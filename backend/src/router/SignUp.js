@@ -1,28 +1,16 @@
 const express = require("express");
-const db = require("../db/connect");
-const CryptoJS = require("crypto-js");
 const router = express.Router();
-const bcrypt = require("bcryptjs");
+const db = require("../db/connect");
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
-
-
-// get all data from body
-// all the data should exists
-// check if user already exists
-// encrypt the pwd
-// save the user in Db
-// Generate token
-
 dotenv.config();
-
 router.post("/register",async(req,res)=>{
-    console.log(req.body);
-    if(!(req.body.fullName
+    console.log(req.body.fName);
+    if(!( req.body && req.body.fName && req.body.lName
         && req.body.email
          && req.body.password && req.body.phoneNumber
          )){
-        res.status(400).send({message:"Please fill all fields"});
+        res.status(400).json({message:"Please fill all fields"});
     }
     // Javascript program to check
 // valid Mobile Number
@@ -45,45 +33,44 @@ console.log(isValid_Mobile_Number(req.body.phoneNumber) + " number  ");
       //  console.log(hash + " Signup");
         let jwtSecretKey = process.env.JWT_SECRET_KEY;
         const user = req.body;
-        const name = req.body.fName;
-        const email = req.body.email;
        // const pwd = hash;
         
 
        
-        const findData = await db.collection("users").find({email:email}).toArray();
+        const findData = await db.collection("users").find({email:req.body.email}).toArray();
         console.log(findData);
 
         // ALL FIELDS COMPULSORY
 
         // if(!(req.body.name && req.body.email && req.body.password)){
-        //     res.status(400).send({message:"Please fill all fields"});
+        //     res.status(400).json({message:"Please fill all fields"});
         // }
 
         // User exist or not
-        if(!(req.body.fullName
+        if(!( req.body && req.body.fName && req.body.lName
             && req.body.email
              && req.body.password && req.body.phoneNumber
              )){
-            res.status(400).send({message:"Please fill all fields"});
+            res.status(400).json({message:"Please fill all fields"});
         }
        else if(findData.length > 0){
             console.log("yes");
-            res.status(200).send({message:"User already exists"});
+            res.status(200).json({message:"User already exists"});
            
         }else if(!isValid_Mobile_Number){
-            res.status(400).send({message:"Phone number is not valid"});
+            res.status(400).json({message:"Phone number is not valid"});
         }
         else{
+            const name = `${req.body.fName} ${req.body.lName}`;
         const addRecord = await db.collection("users").insertOne({
-            name:req.body.fullName,
-            email:email,
+            name:name,
+            email:req.body.email,
             password:jwt.sign(user.password,jwtSecretKey),
             phoneNumber:req.body.phoneNumber
         });
        
         console.log(addRecord);
-        res.status(200).send({message:"DATA ADDED"});
+        res.status(200).json({message:"DATA ADDED"});
     }}catch(e){
         console.log(e);
         console.log("me");
@@ -93,6 +80,7 @@ console.log(isValid_Mobile_Number(req.body.phoneNumber) + " number  ");
 })
 
 router.post("/login",async(req,res)=>{
+    console.log(req.body);
     const email = req.body.email;
     const password = req.body.password;
 
@@ -109,7 +97,7 @@ router.post("/login",async(req,res)=>{
             password: jwt.sign(req.body.password,jwtSecretKey),
         }).toArray();
 
-        console.log(data.email + " before");
+       console.log(data.email + " before");
 
         if(!(req.body.email && req.body.password)){
             res.status(400).send({message:"Please fill all fields"});
@@ -124,6 +112,14 @@ router.post("/login",async(req,res)=>{
     }catch(e){
         console.log(e);
         res.status(400).send("error occured");
+    }
+})
+
+router.get("/otp",(req,res)=>{
+    try{
+
+    }catch(e){
+        console.log(e);
     }
 })
 
